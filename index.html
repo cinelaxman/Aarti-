@@ -108,7 +108,31 @@
       top: 34px;
     }
 
-    .hint{ margin-top:10px; font-size:12.5px; color: rgba(60,60,90,.68); }
+    /* ✅ Bottom emoji line (one line only, no wrap) */
+    .hint{
+      margin-top:10px;
+      font-size:16px;
+      color: rgba(60,60,90,.68);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+      min-height: 22px;
+    }
+
+    /* ✅ Blink message shown after emoji line is full */
+    .positive{
+      margin-top: 8px;
+      font-size: 12.5px;
+      color: rgba(60,60,90,.78);
+      display:none;
+    }
+    .blink{
+      animation: blink 0.7s ease-in-out 2;
+    }
+    @keyframes blink{
+      0%, 100% { opacity: 1; transform: translateY(0); }
+      50%      { opacity: .25; transform: translateY(-1px); }
+    }
 
     .modal{
       position:fixed; inset:0;
@@ -133,6 +157,7 @@
       font-size: clamp(22px, 3.6vw, 34px);
       font-weight: 950;
       letter-spacing: -.02em;
+      line-height: 1.2;
     }
     .close{
       margin-left:10px;
@@ -167,19 +192,29 @@
         <button class="no" id="noBtn">No</button>
       </div>
 
-      <div class="hint" id="hint">Try to say “No” if you can..😅</div>
+      <!-- ✅ Emoji line -->
+      <div class="hint" id="hint">😂</div>
+
+      <!-- ✅ Blink message after full -->
+      <div class="positive" id="positiveMsg">Be positive.. Say.. Yes! 😂</div>
     </div>
   </div>
 
   <div class="modal" id="modal">
     <div class="box">
       <div style="font-size:46px">😍</div>
-      <div class="big">:Darling~ you got my Heart..💖</div>
+
+      <!-- ✅ Heart line moved to next line -->
+      <div class="big">Darling~<br>You got my Heart..💖</div>
+
+      <!-- ✅ Screenshot text replaced -->
       <p style="margin:0;color:#6a6f86;font-size:14px;">
-        Screenshot this and send it to me..😄
+        Let’s have a call to set the date..😄
       </p>
+
       <div style="margin-top:16px;">
-        <button class="yes" onclick="copyLink()">Copy Link 🔗</button>
+        <!-- ✅ More Love instead of Copy Link -->
+        <button class="yes" onclick="heartRain()">More Love 💕</button>
         <button class="close" onclick="closeModal()">Close</button>
       </div>
     </div>
@@ -192,12 +227,50 @@
     const noBtn = document.getElementById('noBtn');
     const yesBtn = document.getElementById('yesBtn');
     const hint = document.getElementById('hint');
+    const positiveMsg = document.getElementById('positiveMsg');
     const modal = document.getElementById('modal');
     const rain = document.getElementById('rain');
 
-    let tries = 0;
+    const EMOJI = "😂";
+    let laughCount = 1;
+    let MAX_LAUGHS = 10; // will be calculated accurately
 
     function rand(min, max){ return Math.random()*(max-min)+min; }
+
+    // ✅ Calculate how many emojis fit in ONE line (no wrap)
+    function computeMaxLaughs(){
+      const original = hint.textContent;
+      let n = 1;
+
+      hint.textContent = EMOJI; // reset
+      const limit = 60;
+
+      for(n = 1; n <= limit; n++){
+        hint.textContent = EMOJI.repeat(n);
+        if(hint.scrollWidth > hint.clientWidth){
+          MAX_LAUGHS = Math.max(1, n - 1);
+          break;
+        }
+      }
+      if(n > limit) MAX_LAUGHS = limit;
+      hint.textContent = original || EMOJI;
+    }
+
+    // run once and on resize
+    computeMaxLaughs();
+    window.addEventListener("resize", ()=>{
+      computeMaxLaughs();
+      // clamp current count to new max
+      laughCount = Math.min(laughCount, MAX_LAUGHS);
+      hint.textContent = EMOJI.repeat(laughCount);
+    });
+
+    function blinkPositive(){
+      positiveMsg.style.display = "block";
+      positiveMsg.classList.remove("blink");
+      void positiveMsg.offsetWidth; // restart animation
+      positiveMsg.classList.add("blink");
+    }
 
     function moveNo(){
       const rect = arena.getBoundingClientRect();
@@ -213,19 +286,19 @@
       noBtn.style.left = x + "px";
       noBtn.style.top  = y + "px";
 
-      tries++;
-      if(tries === 1) hint.textContent = "Arre yaar… it’s running 😂";
-      if(tries === 2) hint.textContent = "Arre yaar… it’s running 😂";
-      if(tries === 3) hint.textContent = "Arre yaar… it’s running 😂";
-      if(tries >= 4) hint.textContent = "Be positive.. Say.. Yes! 😂";
+      // ✅ Add emojis until one line is full
+      if(laughCount < MAX_LAUGHS){
+        laughCount++;
+        hint.textContent = EMOJI.repeat(laughCount);
+        positiveMsg.style.display = "none";
+      }else{
+        // ✅ After full line: blink the message each time
+        blinkPositive();
+      }
     }
 
     noBtn.addEventListener("mouseenter", moveNo);
-
-    noBtn.addEventListener("pointerdown", (e)=>{
-      e.preventDefault();
-      moveNo();
-    });
+    noBtn.addEventListener("pointerdown", (e)=>{ e.preventDefault(); moveNo(); });
 
     arena.addEventListener("pointermove", (e)=>{
       const nb = noBtn.getBoundingClientRect();
@@ -243,16 +316,6 @@
     function closeModal(){ modal.style.display = "none"; }
     window.closeModal = closeModal;
 
-    async function copyLink(){
-      try{
-        await navigator.clipboard.writeText(location.href);
-        alert("Link copied! Send it to Aarti 💝");
-      }catch(err){
-        alert("Couldn’t auto-copy. Copy from address bar 🙂");
-      }
-    }
-    window.copyLink = copyLink;
-
     function heartRain(){
       rain.style.display = "block";
       rain.innerHTML = "";
@@ -266,6 +329,7 @@
       }
       setTimeout(()=>{ rain.style.display = "none"; }, 2300);
     }
+    window.heartRain = heartRain;
 
     modal.addEventListener("click", (e)=>{
       if(e.target === modal) closeModal();

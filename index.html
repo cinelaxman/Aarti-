@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aarti 💖</title>
+  <style>
+    :root{
+      --bg1:#ffe1ef;
+      --bg2:#e4f4ff;
+      --card: rgba(255,255,255,.80);
+      --stroke: rgba(255,255,255,.60);
+      --text:#1f2033;
+      --muted:#6a6f86;
+      --pink:#ff2f7b;
+      --pink2:#ff7ab3;
+      --shadow: 0 22px 80px rgba(20,20,40,.18);
+      --r: 26px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      overflow:hidden;
+      background:
+        radial-gradient(900px 650px at 15% 20%, var(--bg2), transparent 60%),
+        radial-gradient(900px 650px at 85% 20%, var(--bg1), transparent 60%),
+        linear-gradient(135deg, #fff2f8 0%, #eef9ff 100%);
+    }
+
+    .wrap{ min-height:100vh; display:grid; place-items:center; padding:22px; }
+    .card{
+      width:min(760px, 92vw);
+      background: var(--card);
+      backdrop-filter: blur(14px);
+      border:1px solid var(--stroke);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 30px 22px 22px;
+      position:relative;
+      text-align:center;
+    }
+
+    .badge{
+      position:absolute; top:-14px; left: 22px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.9);
+      border: 1px solid rgba(255,255,255,.7);
+      box-shadow: 0 12px 30px rgba(0,0,0,.08);
+      font-size: 13px;
+      color: rgba(60,60,90,.75);
+    }
+
+    h1{
+      margin: 12px 0 8px;
+      font-size: clamp(22px, 3.8vw, 36px);
+      letter-spacing:-0.02em;
+      line-height:1.15;
+    }
+    .name{
+      text-transform: lowercase;
+      background: linear-gradient(90deg, var(--pink), var(--pink2), #5bbcff);
+      -webkit-background-clip:text; background-clip:text;
+      color:transparent;
+      font-weight: 950;
+    }
+    p{ margin:0; color:var(--muted); font-size:14px; }
+
+    .arena{
+      margin-top: 22px;
+      height: 110px;
+      position:relative;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:14px;
+      touch-action:none;
+    }
+
+    button{
+      border:0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 15px;
+      font-weight: 850;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
+      user-select:none;
+    }
+    button:active{ transform: scale(.98); }
+
+    .yes{
+      color:white;
+      background: linear-gradient(135deg, var(--pink), var(--pink2));
+      box-shadow: 0 16px 48px rgba(255,47,123,.30);
+    }
+    .no{
+      position:absolute;
+      background: rgba(255,255,255,.9);
+      color:#2a2c42;
+      border:1px solid rgba(120,120,160,.22);
+      box-shadow: 0 14px 32px rgba(0,0,0,.10);
+      min-width: 86px;
+      left: 60%;
+      top: 34px;
+    }
+
+    .hint{ margin-top:10px; font-size:12.5px; color: rgba(60,60,90,.68); }
+
+    .modal{
+      position:fixed; inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(10,10,20,.35);
+      backdrop-filter: blur(10px);
+      z-index:50;
+      padding:22px;
+    }
+    .box{
+      width:min(600px, 94vw);
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 28px;
+      box-shadow: 0 22px 90px rgba(0,0,0,.24);
+      padding: 28px 22px;
+      text-align:center;
+    }
+    .big{
+      margin: 10px 0 8px;
+      font-size: clamp(22px, 3.6vw, 34px);
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+    .close{
+      margin-left:10px;
+      background: rgba(0,0,0,.08);
+      color:#222;
+      box-shadow:none;
+      font-weight:850;
+    }
+
+    .rain{ position:fixed; inset:0; pointer-events:none; display:none; z-index:60; }
+    .h{
+      position:absolute;
+      top:-8vh;
+      animation: fall 2.1s ease-in forwards;
+      opacity:.95;
+      filter: drop-shadow(0 12px 10px rgba(0,0,0,.15));
+    }
+    .h::before{ content:"💖"; font-size: 18px; }
+    @keyframes fall{ to{ transform: translateY(115vh) rotate(420deg); opacity:0; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="badge">💝 Happy Valentine’s Week</div>
+
+      <h1><span class="name">Aarti..</span> will you be my Valentine?</h1>
+      <p>Try tapping “No”… if you can..😅</p>
+
+      <div class="arena" id="arena">
+        <button class="yes" id="yesBtn">Yes 💖</button>
+        <button class="no" id="noBtn">No</button>
+      </div>
+
+      <div class="hint" id="hint">Try tapping “No”… if you can..😄</div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="box">
+      <div style="font-size:46px">🥰💘</div>
+      <div class="big">Wow! My heart flooded with Love~💖</div>
+      <p style="margin:0;color:#6a6f86;font-size:14px;">
+        Screenshot this and send it to me..😄
+      </p>
+      <div style="margin-top:16px;">
+        <button class="yes" onclick="copyLink()">Copy Link 🔗</button>
+        <button class="close" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="rain" id="rain"></div>
+
+  <script>
+    const arena = document.getElementById('arena');
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const hint = document.getElementById('hint');
+    const modal = document.getElementById('modal');
+    const rain = document.getElementById('rain');
+
+    let tries = 0;
+
+    function rand(min, max){ return Math.random()*(max-min)+min; }
+
+    function moveNo(){
+      const rect = arena.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+      const pad = 8;
+
+      const maxX = rect.width - b.width - pad;
+      const maxY = rect.height - b.height - pad;
+
+      const x = rand(pad, Math.max(pad, maxX));
+      const y = rand(pad, Math.max(pad, maxY));
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top  = y + "px";
+
+      tries++;
+      if(tries === 1) hint.textContent = "Arre yaar… it’s running 😂";
+      if(tries === 2) hint.textContent = "Arre yaar… it’s running 😂";
+      if(tries === 3) hint.textContent = "Arre yaar… it’s running 😂";
+      if(tries >= 4) hint.textContent = "Be positive.. Say.. Yes! 😂";
+    }
+
+    noBtn.addEventListener("mouseenter", moveNo);
+
+    noBtn.addEventListener("pointerdown", (e)=>{
+      e.preventDefault();
+      moveNo();
+    });
+
+    arena.addEventListener("pointermove", (e)=>{
+      const nb = noBtn.getBoundingClientRect();
+      const dx = Math.max(nb.left - e.clientX, 0, e.clientX - nb.right);
+      const dy = Math.max(nb.top  - e.clientY, 0, e.clientY - nb.bottom);
+      const dist = Math.hypot(dx, dy);
+      if(dist < 90) moveNo();
+    });
+
+    yesBtn.addEventListener("click", ()=>{
+      modal.style.display = "grid";
+      heartRain();
+    });
+
+    function closeModal(){ modal.style.display = "none"; }
+    window.closeModal = closeModal;
+
+    async function copyLink(){
+      try{
+        await navigator.clipboard.writeText(location.href);
+        alert("Link copied! Send it to Aarti 💝");
+      }catch(err){
+        alert("Couldn’t auto-copy. Copy from address bar 🙂");
+      }
+    }
+    window.copyLink = copyLink;
+
+    function heartRain(){
+      rain.style.display = "block";
+      rain.innerHTML = "";
+      for(let i=0;i<42;i++){
+        const h = document.createElement("div");
+        h.className = "h";
+        h.style.left = rand(0, 100) + "vw";
+        h.style.animationDelay = rand(0, 0.35) + "s";
+        h.style.transform = `translateY(-8vh) rotate(${rand(0,180)}deg)`;
+        rain.appendChild(h);
+      }
+      setTimeout(()=>{ rain.style.display = "none"; }, 2300);
+    }
+
+    modal.addEventListener("click", (e)=>{
+      if(e.target === modal) closeModal();
+    });
+  </script>
+</body>
+</html>
